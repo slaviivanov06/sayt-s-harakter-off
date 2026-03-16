@@ -8,8 +8,8 @@ const navTabs = [
   { label: "Наши проекти", href: "#projects", favicon: "#4F8EF7" },
   { label: "Процесът", href: "#process", favicon: "#4F8EF7" },
   { label: "Въпроси", href: "#faq", favicon: "#F59E0B" },
-  { label: "Оферти", href: "#pricing", favicon: "#22C55E" },
   { label: "За нас", href: "#about", favicon: "#4F8EF7" },
+  { label: "Оферти", href: "#pricing", favicon: "#22C55E" },
 ];
 
 export default function Navbar() {

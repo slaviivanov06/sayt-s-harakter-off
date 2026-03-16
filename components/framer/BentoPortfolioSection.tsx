@@ -8,34 +8,26 @@ const projects = [
 ];
 
 export default function BentoPortfolioSection() {
-  const [hovered, setHovered] = useState<number | null>(null);
-  const [expanded, setExpanded] = useState<number | null>(null);
+  const [selected, setSelected] = useState<number | null>(null);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const mobileVideoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
-  const handleEnter = (i: number) => {
-    setHovered(i);
+  const handleClick = (i: number) => {
+    const next = selected === i ? null : i;
+    setSelected(next);
+    // Desktop sticky video
     videoRefs.current.forEach((v, idx) => {
-      if (idx === i) { v?.play().catch(() => {}); }
+      if (idx === i && next === i) { v?.play().catch(() => {}); }
       else { v?.pause(); if (v) v.currentTime = 0; }
     });
-  };
-
-  const handleLeave = () => {
-    setHovered(null);
-    videoRefs.current.forEach((v) => { v?.pause(); if (v) v.currentTime = 0; });
-  };
-
-  const handleTap = (i: number) => {
-    const next = expanded === i ? null : i;
-    setExpanded(next);
+    // Mobile inline video
     mobileVideoRefs.current.forEach((v, idx) => {
       if (idx === i && next === i) { v?.play().catch(() => {}); }
       else { v?.pause(); if (v) v.currentTime = 0; }
     });
   };
 
-  const active = hovered ?? 0;
+  const active = selected ?? 0;
 
   return (
     <section className="bg-[#0A0F1E] py-24 px-6" id="projects">
@@ -52,16 +44,12 @@ export default function BentoPortfolioSection() {
               style={{
                 fontSize: "clamp(72px, 10vw, 140px)",
                 color: "rgba(240,244,255,0.11)",
-                letterSpacing: "-0.04em",
+                letterSpacing: "-0.02em",
               }}
             >
               Работата<br />говори сама.
             </h2>
           </div>
-          <p className="text-[#F0F4FF]/40 max-w-xs text-sm leading-relaxed">
-            <span className="hidden lg:inline">Задръж мишката върху проект за да видиш резултата.</span>
-            <span className="lg:hidden">Натисни проект за да видиш резултата.</span>
-          </p>
         </div>
 
         {/* List + Preview */}
@@ -72,13 +60,11 @@ export default function BentoPortfolioSection() {
             {projects.map((p, i) => (
               <div key={i}>
                 <div
-                  onMouseEnter={() => handleEnter(i)}
-                  onMouseLeave={handleLeave}
-                  onClick={() => handleTap(i)}
-                  className="group border-b flex items-center gap-6 py-8 cursor-pointer lg:cursor-default"
+                  onClick={() => handleClick(i)}
+                  className="group border-b flex items-center gap-6 py-8 cursor-pointer"
                   style={{
                     borderColor: "rgba(240,244,255,0.07)",
-                    opacity: hovered === null || hovered === i ? 1 : 0.3,
+                    opacity: selected === null || selected === i ? 1 : 0.3,
                     transition: "opacity 0.3s ease",
                   }}
                 >
@@ -115,10 +101,8 @@ export default function BentoPortfolioSection() {
                     width="18" height="18" viewBox="0 0 18 18" fill="none"
                     className="flex-shrink-0 transition-all duration-300"
                     style={{
-                      transform: expanded === i
-                        ? "rotate(90deg)"
-                        : hovered === i ? "translate(3px, -3px)" : "translate(0,0)",
-                      color: hovered === i || expanded === i ? "#3B7AE8" : "rgba(240,244,255,0.2)",
+                      transform: selected === i ? "rotate(90deg)" : "translate(0,0)",
+                      color: selected === i ? "#3B7AE8" : "rgba(240,244,255,0.2)",
                     }}
                   >
                     <path d="M4 14L14 4M14 4H7M14 4V11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
@@ -129,8 +113,8 @@ export default function BentoPortfolioSection() {
                 <div
                   className="lg:hidden overflow-hidden transition-all duration-500"
                   style={{
-                    maxHeight: expanded === i ? 300 : 0,
-                    opacity: expanded === i ? 1 : 0,
+                    maxHeight: selected === i ? 300 : 0,
+                    opacity: selected === i ? 1 : 0,
                   }}
                 >
                   <div className="relative rounded-xl overflow-hidden mb-4" style={{ aspectRatio: "16/10" }}>
@@ -160,8 +144,11 @@ export default function BentoPortfolioSection() {
           {/* Sticky video preview */}
           <div
             className="sticky top-24 hidden lg:block"
-            style={{ aspectRatio: "16/10" }}
           >
+            <p className="text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: "rgba(240,244,255,0.25)" }}>
+              Избери проект за преглед
+            </p>
+            <div style={{ aspectRatio: "16/10" }}>
             <div
               className="relative w-full h-full rounded-2xl overflow-hidden"
               style={{
@@ -203,6 +190,7 @@ export default function BentoPortfolioSection() {
                   {projects[active].tag}
                 </p>
               </div>
+            </div>
             </div>
           </div>
 
